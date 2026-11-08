@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sagai-cn"
+version = "1.0.0"
+description = "SAGAI 国内化版本：城市街道景观质量评估工具"
+requires-python = ">=3.10"
+# 依赖走 requirements.txt / requirements-gpu.txt 单独安装，此处留空，
+# 避免 pip install -e . 时重复拉取 torch 等重型依赖。
+dependencies = []
+
+[project.scripts]
+sagai_cn = "sagai_cn.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["sagai_cn*"]

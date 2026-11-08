@@ -1,0 +1,79 @@
+# =============================================================================
+# SAGAI-CN 评分任务定义（TaskSpec 列表）
+#
+# 每个任务支持的键（字段）及说明：
+#   column              必填  任务列名。既是评分 CSV 的列名，也是 --score-col 引用的名字；
+#                             建议使用语义化英文名（如 green_view），不建议使用 task_1 这种编号。
+#   prompt              必填  评分问题。中英文均可。
+#   task_type           必填  答案类型：numeric / category / boolean / text。
+#   theory              可选  评分细则（定义、规则、边界情况），写给 AI 的"技术规定"。
+#   fmt                 可选  输出格式说明；不填则按 task_type 用内置默认格式。
+#   advanced_reasoning  可选  是否开 CoT 思维链（true/false）。开了必须加大 --max-tokens。
+#   consensus_enabled   可选  是否开三票共识（true/false）。开=更稳，但费用×consensus_runs。
+#   consensus_runs      可选  共识投票次数（2~5，默认 3）。
+#   numeric_tolerance   可选  numeric 共识容差（百分比）。仅在 consensus_enabled=true 时生效。
+#
+# 硬规则：
+#   1. 必须限定输出格式与取值域（numeric 给范围 / category 枚举全部候选 / boolean 指定"是/否"）。
+#   2. 用可观测描述，避免"好不好""美不美"这类模糊形容词。
+#   3. text 任务不支持 CoT 与共识（代码会自动关掉）。
+#   4. numeric_tolerance：估算类（百分比、宽度）建议 20；数数类（店面、树木）建议 30~50。
+# =============================================================================
+
+- column: green_view
+  prompt: 估算画面中植被（行道树、灌木、草地）占整个视野的面积百分比。只输出一个 0-100 的整数，不要输出解释和其他文字。
+  task_type: numeric
+  theory: 植被指活的绿色植物（行道树、灌木、草地、藤蔓等），不含绿色广告牌、绿色涂料墙面、绿色遮阳篷等非植物。
+  consensus_enabled: true
+  consensus_runs: 3
+  numeric_tolerance: 20
+
+- column: sidewalk_continuous
+  prompt: 画面中人行道是否连续，且未被机动车停放、杂物或施工围挡占用？只回答：是 或 否
+  task_type: boolean
+
+- column: enclosure
+  prompt: 评价街道空间的围合感：0 表示完全开敞无边界（如空旷路口、荒地），100 表示强烈围合（两侧连续建筑或界面紧密夹峙）。只输出一个 0-100 的整数，不要输出解释和其他文字。
+  task_type: numeric
+  theory: 围合感指视野中被建筑、围墙、连续界面包围的程度：空旷路口/荒地≈0，两侧连续建筑紧密夹峙≈100；仅一侧有界面时取中间偏低值。
+  advanced_reasoning: true
+  consensus_enabled: true
+  consensus_runs: 3
+  numeric_tolerance: 20
+
+- column: overall_impression
+  prompt: 用一句话（不超过 30 字）描述这条街道给人的整体氛围和第一印象。直接输出描述文字，不要解释。
+  task_type: text
+
+# - column: sky_view
+#   prompt: 估算画面中天空占整个视野的面积百分比。只输出一个 0-100 的整数，不要输出解释和其他文字。
+#   task_type: numeric
+#   consensus_enabled: true
+#   consensus_runs: 3
+#   numeric_tolerance: 20
+
+# - column: sidewalk_width
+#   prompt: 估计图中人行道的宽度（米），取 0-10 的整数，无人行道回答 0。只输出一个整数，不要输出解释和其他文字。
+#   task_type: numeric
+#   theory: 人行道指与车行道分离的步行铺装区域；仅路缘石不算；被占用/中断时按可见段估计。
+#   consensus_enabled: true
+#   consensus_runs: 3
+#   numeric_tolerance: 20
+
+# - column: bike_lane
+#   prompt: 画面中是否能看到明确划线的自行车道或骑行设施？只回答：是 或 否
+#   task_type: boolean
+
+# - column: interface_vitality
+#   prompt: 评价街道临街底层界面的活跃度。只能从以下三项中选择一个回答：活跃（以商铺橱窗、门窗、出入口为主）、中性、封闭（以围墙、实墙、卷帘门为主）。只输出其中一个词。
+#   task_type: category
+#   theory: 活跃=以商铺橱窗、门窗、出入口等可交互界面为主；封闭=以围墙、实墙、卷帘门等无交互界面为主；两者混合或界面不明显时判中性。
+
+# - column: maintenance
+#   prompt: 评价街道设施与铺装的维护状况（是否破损、脏乱、有涂鸦或荒废感）。只能从以下三项中选择一个回答：良好、一般、较差。只输出其中一个词。
+#   task_type: category
+
+# - column: lighting
+#   prompt: 画面中是否能看到路灯或其他街道照明设施？只回答：是 或 否
+#   task_type: boolean
+

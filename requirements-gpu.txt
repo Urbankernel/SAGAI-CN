@@ -1,0 +1,27 @@
+# ---- 路线 A（本地 GPU 推理）一键安装 ----
+# 用法：python -m pip install -r requirements-gpu.txt
+#
+# 为什么单独一个文件：Windows 上 PyPI 官方源（及清华等镜像）的 torch 只有
+# CPU 版；GPU 版必须从 pytorch 官方 CUDA 源安装。本文件通过 --extra-index-url
+# 默认安装 CUDA 13.0（cu130）构建的 torch/torchvision —— 已核实该源提供
+# win_amd64 cp312 轮子（torch 2.14.0+cu130 / torchvision 0.29.0+cu130）。
+# 版本号带 +cu130 后缀，pip 会优先于 PyPI 的 CPU 版选中它。
+#
+# 注意：
+# - 需要 NVIDIA 显卡 + 对应驱动（RTX 30/40/50 系均可，CUDA 13.0 构建向下兼容新驱动）。
+# - 老卡（GTX 10 系 / 9 系等 Pascal / Maxwell 架构）不能用 cu130 —— CUDA 13 只支持
+#   Turing(sm_75) 及以上，装完跑推理会报 "no kernel image is available"。请改装
+#   cu126 版 torch（Pascal 的最后官方支持，PyTorch 2.15 起停发）：
+#     python -m pip install torch==2.14.0 torchvision==0.29.0 --index-url https://download.pytorch.org/whl/cu126
+# - 无 N 卡的机器也能装（不会报错），但 torch.cuda.is_available() 为 False，
+#   本地推理不可用——请走路线 B（DashScope 云服务）。
+# - download.pytorch.org 国内可达但速度一般；其余包仍走你在命令行 -i 指定的镜像。
+--extra-index-url https://download.pytorch.org/whl/cu130
+
+torch>=2.2
+torchvision>=0.17
+modelscope>=1.20
+transformers>=5.15
+accelerate>=1.0
+bitsandbytes>=0.43        # 4bit/8bit 量化；Windows 装不上就改用 --precision fp16
+qwen-vl-utils>=0.0.11

@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+sagai_cn.egg-info/
+
+# 数据与模型（不上传）
+data/
+models/
+photos/
+vendor/
+*.gpkg
+*.jpg
+!task/**
+docs/
+
+# 街景原始图受服务条款约束，任何情况下不入库
+StreetViewBatchDownload*/
+
+# WorkBuddy 项目数据（本地工作区数据，不上传）
+.workbuddy/

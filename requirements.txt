@@ -1,0 +1,25 @@
+# ---- 核心（全部必需）----
+geopandas>=1.0
+shapely>=2.0
+pandas>=2.0
+numpy>=1.26
+requests>=2.31
+Pillow>=10.0
+folium>=0.15
+matplotlib>=3.8
+PyYAML>=6.0                  # 读取 YAML 任务定义（task/tasks.yaml，支持注释）
+
+# ---- Block 1 路网来源（按需）----
+# Overpass 在线拉取：
+osmnx>=2.0
+# 离线 .osm.pbf 解析（方案 B）：
+# pyrosm>=0.6
+
+# ---- 本地推理 路线 A（需 NVIDIA GPU）----
+# 单独放在 requirements-gpu.txt：Windows 上 PyPI 及国内镜像的 torch 只有 CPU 版，
+# GPU 版需走 pytorch 官方 CUDA 源（cu130），默认安装 GPU 版 torch。安装：
+#   python -m pip install -r requirements-gpu.txt
+# UVLM 推理引擎：GitHub 不可达，见 README「离线安装 UVLM」
+
+# ---- 可选 ----
+python-dotenv>=1.0            # .env 支持
